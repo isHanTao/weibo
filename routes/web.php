@@ -23,6 +23,7 @@ Route::get('signup', 'UsersController@create')->name('signup');
 
 // user
 Route::resource('users', 'UsersController');
+Route::get('/users/{user}/edit', 'UsersController@edit')->name('users.edit');
 
 // login
 Route::get('login', 'SessionsController@create')->name('login');
