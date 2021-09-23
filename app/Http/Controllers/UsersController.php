@@ -10,25 +10,41 @@ class UsersController extends Controller
 {
     public function __construct()
     {
+        // 必须登录才能进入
         $this->middleware('auth', [
             'except' => ['show', 'create', 'store']
         ]);
 
+        // 不登录能进入
         $this->middleware('guest', [
             'only' => ['create']
         ]);
     }
 
+    /**
+     * 返回注册界面
+     */
     public function create()
     {
         return view('users.create');
     }
 
+    /**
+     * 展示用户信息
+     * @param User $user
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
+     */
     public function show(User $user)
     {
         return view('users.show', compact('user'));
     }
 
+    /**
+     * 用户信息验证 & 保存用户信息到数据库
+     * @param Request $request
+     * @return \Illuminate\Http\RedirectResponse
+     * @throws \Illuminate\Validation\ValidationException
+     */
     public function store(Request $request)
     {
         $this->validate($request, [
@@ -47,12 +63,26 @@ class UsersController extends Controller
         return redirect()->route('users.show', [$user]);
     }
 
+    /**
+     * 返回编辑个人信息界面
+     * @param User $user
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
+     * @throws \Illuminate\Auth\Access\AuthorizationException
+     */
     public function edit(User $user)
     {
         $this->authorize('update', $user);
         return view('users.edit', compact('user'));
     }
 
+    /**
+     * 更新用户数据
+     * @param User $user
+     * @param Request $request
+     * @return \Illuminate\Http\RedirectResponse
+     * @throws \Illuminate\Auth\Access\AuthorizationException
+     * @throws \Illuminate\Validation\ValidationException
+     */
     public function update(User $user, Request $request)
     {
         $this->authorize('update', $user);
@@ -70,5 +100,15 @@ class UsersController extends Controller
         session()->flash('success', '个人资料更新成功！');
 
         return redirect()->route('users.show', $user);
+    }
+
+    /**
+     * 获取所有用户列表并返回到列表界面
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
+     */
+    public function index()
+    {
+        $users = User::query()->paginate(6);
+        return view('users.index', compact('users'));
     }
 }
