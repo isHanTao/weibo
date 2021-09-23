@@ -12,7 +12,7 @@ class UsersController extends Controller
     {
         // 必须登录才能进入
         $this->middleware('auth', [
-            'except' => ['show', 'create', 'store']
+            'except' => ['show', 'create', 'store', 'index']
         ]);
 
         // 不登录能进入
@@ -110,5 +110,18 @@ class UsersController extends Controller
     {
         $users = User::query()->paginate(6);
         return view('users.index', compact('users'));
+    }
+
+    /**
+     * 管理员删除用户
+     * @param User $user
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function destroy(User $user)
+    {
+        $this->authorize('destroy', $user);
+        $user->delete();
+        session()->flash('success', '成功删除用户！');
+        return back();
     }
 }
