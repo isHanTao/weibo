@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
@@ -54,9 +55,19 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
-    public function gravatar($size = '100')
+    public function gravatar($size = '100') : string
     {
         $hash = md5(strtolower(trim($this->attributes['email'])));
         return "http://www.gravatar.com/avatar/$hash?s=$size";
+    }
+
+
+    /**
+     * 用户所有微博动态
+     * @return HasMany
+     */
+    public function statuses() : HasMany
+    {
+        return $this->hasMany(Status::class);
     }
 }
