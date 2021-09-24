@@ -72,12 +72,15 @@ class User extends Authenticatable
     }
 
     /**
-     * 获取所有微博动态并按时间排序
+     * 获取关注用户的所有微博动态，按创建时间倒序
      * @return HasMany
      */
     public function feed() : HasMany
     {
-        return $this->statuses()
+        $user_ids = $this->followings->pluck('id')->toArray();
+        array_push($user_ids, $this->id);
+        return Status::whereIn('user_id', $user_ids)
+            ->with('user')
             ->orderBy('created_at', 'desc');
     }
 
