@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -73,9 +72,8 @@ class User extends Authenticatable
 
     /**
      * 获取关注用户的所有微博动态，按创建时间倒序
-     * @return HasMany
      */
-    public function feed() : HasMany
+    public function feed()
     {
         $user_ids = $this->followings->pluck('id')->toArray();
         array_push($user_ids, $this->id);
